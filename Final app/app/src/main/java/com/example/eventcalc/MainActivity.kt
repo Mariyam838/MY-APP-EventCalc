@@ -12,14 +12,18 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.textfield.TextInputEditText
 import kotlin.math.roundToInt
 
+/**
+ * This app helps users plan budgets for different types of events by allocating
+ * percentages of a total budget to various categories like venue, food, etc.
+ */
 class MainActivity : AppCompatActivity() {
-
+    // Event type selection buttons
     private lateinit var btnWedding: Button
     private lateinit var btnBirthday: Button
     private lateinit var btnCorporate: Button
     private lateinit var btnBabyShower: Button
     private lateinit var btnOther: Button
-
+    // Event details input fields
     private lateinit var editTextGuests: TextInputEditText
     private lateinit var spinnerStyle: Spinner
     private lateinit var spinnerVenue: Spinner
@@ -27,7 +31,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var etCurrency: EditText
     private lateinit var tvCurrencyCode: TextView
     private lateinit var etTotalBudget: EditText
-
+    // SeekBars for adjusting budget allocation percentages
     private lateinit var seekBarVenue: SeekBar
     private lateinit var seekBarFood: SeekBar
     private lateinit var seekBarDecor: SeekBar
@@ -35,7 +39,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var seekBarPhotography: SeekBar
     private lateinit var seekBarEntertainment: SeekBar
     private lateinit var seekBarMisc: SeekBar
-
+    // TextViews to display the percentage values
     private lateinit var tvVenuePercentage: TextView
     private lateinit var tvFoodPercentage: TextView
     private lateinit var tvDecorPercentage: TextView
@@ -43,7 +47,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var tvPhotographyPercentage: TextView
     private lateinit var tvEntertainmentPercentage: TextView
     private lateinit var tvMiscPercentage: TextView
-
+    // EditTexts to display calculated budget amounts
     private lateinit var etVenueBudget: EditText
     private lateinit var etFoodBudget: EditText
     private lateinit var etDecorBudget: EditText
@@ -52,11 +56,13 @@ class MainActivity : AppCompatActivity() {
     private lateinit var etEntertainmentBudget: EditText
     private lateinit var etMiscBudget: EditText
 
+    // Button to finalize and display results
     private lateinit var btnCalculate: Button
 
     private var selectedEventType = "Wedding"
     private var totalBudget = 10000
 
+    // Map of countries to their currency codes
     private val countryCurrencyMap = mapOf(
         "United Arab Emirates" to "AED",
         "United States" to "USD",
@@ -70,10 +76,14 @@ class MainActivity : AppCompatActivity() {
         "Singapore" to "SGD"
     )
 
+    /**
+     * Called when the activity is first created.
+     * Sets up the layout and initializes all components.
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
+        // Setup sequence for all UI components
         initializeViews()
         setupEventTypeButtons()
         setupCountrySpinner()
@@ -82,22 +92,27 @@ class MainActivity : AppCompatActivity() {
         setupCalculateButton()
     }
 
+    /**
+     * Finds and initializes all view references from the layout file.
+     * This connects all UI elements to their corresponding variables.
+     */
     private fun initializeViews() {
+        // Find event type buttons
         btnWedding = findViewById(R.id.btnWedding)
         btnBirthday = findViewById(R.id.btnBirthday)
         btnCorporate = findViewById(R.id.btnCorporate)
         btnBabyShower = findViewById(R.id.btnBabyShower)
         btnOther = findViewById(R.id.btnOther)
-
+        // Find event details inputs
         editTextGuests = findViewById(R.id.editTextGuests)
         spinnerStyle = findViewById(R.id.spinnerStyle)
         spinnerVenue = findViewById(R.id.spinnerVenue)
-
+        // Find country and currency fields
         spinnerCountry = findViewById(R.id.spinnerCountry)
         etCurrency = findViewById(R.id.etCurrency)
         tvCurrencyCode = findViewById(R.id.tvCurrencyCode)
         etTotalBudget = findViewById(R.id.etTotalBudget)
-
+        // Find percentage display TextViews
         tvVenuePercentage = findViewById(R.id.tvVenuePercentage)
         tvFoodPercentage = findViewById(R.id.tvFoodPercentage)
         tvDecorPercentage = findViewById(R.id.tvDecorPercentage)
@@ -105,7 +120,7 @@ class MainActivity : AppCompatActivity() {
         tvPhotographyPercentage = findViewById(R.id.tvPhotographyPercentage)
         tvEntertainmentPercentage = findViewById(R.id.tvEntertainmentPercentage)
         tvMiscPercentage = findViewById(R.id.tvMiscPercentage)
-
+        // Find SeekBars for percentage allocation
         seekBarVenue = findViewById(R.id.seekBarVenue)
         seekBarFood = findViewById(R.id.seekBarFood)
         seekBarDecor = findViewById(R.id.seekBarDecor)
@@ -113,7 +128,7 @@ class MainActivity : AppCompatActivity() {
         seekBarPhotography = findViewById(R.id.seekBarPhotography)
         seekBarEntertainment = findViewById(R.id.seekBarEntertainment)
         seekBarMisc = findViewById(R.id.seekBarMisc)
-
+        // Find budget amount EditTexts
         etVenueBudget = findViewById(R.id.etVenueBudget)
         etFoodBudget = findViewById(R.id.etFoodBudget)
         etDecorBudget = findViewById(R.id.etDecorBudget)
@@ -122,13 +137,17 @@ class MainActivity : AppCompatActivity() {
         etEntertainmentBudget = findViewById(R.id.etEntertainmentBudget)
         etMiscBudget = findViewById(R.id.etMiscBudget)
 
-        btnCalculate = findViewById(R.id.btnCalculate)
+        btnCalculate = findViewById(R.id.btnCalculate)// Calculate button
     }
-
+    /**
+     * Sets up the event type buttons with listeners and default selection.
+     * When a button is clicked, it's highlighted and default budget distributions
+     * are set based on the event type.
+     */
     private fun setupEventTypeButtons() {
         val eventButtons = listOf(btnWedding, btnBirthday, btnCorporate, btnBabyShower, btnOther)
         setSelectedButton(btnWedding)
-
+        // Add click listeners to all event buttons
         for (button in eventButtons) {
             button.setOnClickListener {
                 setSelectedButton(button)
@@ -137,7 +156,10 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-
+    /**
+     * Updates button appearance to show which event type is selected.
+     * The selected button gets a different background.
+     */
     private fun setSelectedButton(selectedButton: Button) {
         val buttons = listOf(btnWedding, btnBirthday, btnCorporate, btnBabyShower, btnOther)
         for (button in buttons) {
@@ -150,7 +172,10 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-
+    /**
+     * Sets up the country spinner to update currency when a country is selected.
+     * When a country is chosen, its corresponding currency code is displayed.
+     */
     private fun setupCountrySpinner() {
         spinnerCountry.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
@@ -166,7 +191,11 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-
+    /**
+     * Sets up the budget input fields with text change listeners.
+     * When total budget changes, all category amounts are recalculated.
+     * When individual category budgets change, their percentages are updated.
+     */
     private fun setupBudgetEditTexts() {
         etTotalBudget.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -183,7 +212,7 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         })
-
+        // Set up listeners for each category budget field
         setupBudgetEditTextWatcher(etVenueBudget, seekBarVenue, tvVenuePercentage)
         setupBudgetEditTextWatcher(etFoodBudget, seekBarFood, tvFoodPercentage)
         setupBudgetEditTextWatcher(etDecorBudget, seekBarDecor, tvDecorPercentage)
@@ -192,7 +221,11 @@ class MainActivity : AppCompatActivity() {
         setupBudgetEditTextWatcher(etEntertainmentBudget, seekBarEntertainment, tvEntertainmentPercentage)
         setupBudgetEditTextWatcher(etMiscBudget, seekBarMisc, tvMiscPercentage)
     }
-
+    /**
+     * Creates a TextWatcher for budget category EditTexts.
+     * When the budget amount is modified, updates the corresponding
+     * SeekBar and percentage display.
+     */
     private fun setupBudgetEditTextWatcher(editText: EditText, seekBar: SeekBar, percentageText: TextView) {
         editText.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -214,7 +247,10 @@ class MainActivity : AppCompatActivity() {
             }
         })
     }
-
+    /**
+     * Sets up SeekBars for budget allocation percentages.
+     * Each SeekBar controls the percentage of total budget for one category.
+     */
     private fun setupSeekBars() {
         setupSeekBarListener(seekBarVenue, etVenueBudget, tvVenuePercentage)
         setupSeekBarListener(seekBarFood, etFoodBudget, tvFoodPercentage)
@@ -224,7 +260,11 @@ class MainActivity : AppCompatActivity() {
         setupSeekBarListener(seekBarEntertainment, etEntertainmentBudget, tvEntertainmentPercentage)
         setupSeekBarListener(seekBarMisc, etMiscBudget, tvMiscPercentage)
     }
-
+    /**
+     * Creates a listener for a budget category SeekBar.
+     * When the SeekBar is adjusted, updates the percentage display
+     * and calculates the corresponding budget amount.
+     */
     private fun setupSeekBarListener(seekBar: SeekBar, budgetEdit: EditText, percentageText: TextView) {
         seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
@@ -239,7 +279,8 @@ class MainActivity : AppCompatActivity() {
             override fun onStopTrackingTouch(seekBar: SeekBar?) {}
         })
     }
-
+    /**
+     * Sets default budget percentage distributions based on event type*/
     private fun setDefaultBudgetDistributionForEventType(eventType: String) {
         when (eventType) {
             "Wedding" -> {
@@ -288,14 +329,17 @@ class MainActivity : AppCompatActivity() {
                 updateSeekBar(seekBarMisc, 5)
             }
         }
-
+        // Recalculate all budget values based on new percentages
         updateBudgetValues()
     }
 
     private fun updateSeekBar(seekBar: SeekBar, progress: Int) {
         seekBar.progress = progress
     }
-
+    /**
+     * Updates all budget amount fields based on current percentages and total budget.
+     * This ensures that all displays remain synchronized.
+     */
     private fun updateBudgetValues() {
         val percentages = listOf(
             seekBarVenue.progress,
@@ -330,7 +374,10 @@ class MainActivity : AppCompatActivity() {
             percentageTexts[i].text = "${percentages[i]}%"
         }
     }
-
+    /**
+     * Sets up the Calculate button that finalizes the budget allocation.
+     * When clicked, validates that percentages total 100% and displays a summary.
+     */
     private fun setupCalculateButton() {
         btnCalculate.setOnClickListener {
             val totalPercentage = seekBarVenue.progress + seekBarFood.progress +
@@ -343,7 +390,7 @@ class MainActivity : AppCompatActivity() {
                     Toast.LENGTH_LONG).show()
                 return@setOnClickListener
             }
-
+            // Gather all event details and budget values
             val numGuests = editTextGuests.text.toString().toIntOrNull() ?: 0
             val eventStyle = spinnerStyle.selectedItem.toString()
             val venueType = spinnerVenue.selectedItem.toString()
@@ -356,9 +403,9 @@ class MainActivity : AppCompatActivity() {
             val entertainmentBudget = etEntertainmentBudget.text.toString().toIntOrNull() ?: 0
             val miscBudget = etMiscBudget.text.toString().toIntOrNull() ?: 0
             val currency = tvCurrencyCode.text.toString()
-
+            // Calculate per-guest food cost
             val perGuestAmount = if (numGuests > 0) (foodBudget.toFloat() / numGuests).roundToInt() else 0
-
+            // Create budget summary text
             val budgetSummary = """
                 Event Budget Summary:
 
@@ -385,7 +432,9 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-
+    /**
+     Displays the final budget summary in a dialog.
+     */
     private fun displayBudgetSummary(summary: String) {
         val dialogView = layoutInflater.inflate(R.layout.activity_result, null)
         val tvResultSummary = dialogView.findViewById<TextView>(R.id.tvResultSummary)
@@ -403,7 +452,7 @@ class MainActivity : AppCompatActivity() {
                 startActivity(Intent.createChooser(shareIntent, "Share Budget Summary"))
             }
 
-        dialogBuilder.show()
+        dialogBuilder.show()// Display the dialog
     }
 
 }
